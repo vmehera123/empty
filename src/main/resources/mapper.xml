@@ -1,0 +1,1609 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<ROOT>
+	<document>
+		<mapper namespace="com.example.skn.mapper.ntx.ExportNtxMapper">
+
+				<!-- ========================================
+						Result Maps Section
+						======================================== -->
+				
+				<!-- Result Map for Export NTX Data -->
+				<resultMap id="exportNtxResultMap" type="com.example.skn.dto.ExportNtxDto">
+						<id column="id" property="id"/>
+						<result column="work_cd" property="workCd"/>
+						<result column="kousuu" property="kousuu"/>
+						<result column="meisaiId" property="meisaiId"/>
+						<result column="seibiId" property="seibiId"/>
+						<result column="manualSeibiId" property="manualSeibiId"/>
+						<result column="work_name" property="workName"/>
+						<result column="work_type" property="workType"/>
+						<result column="status" property="status"/>
+						<result column="create_date" property="createDate"/>
+						<result column="update_date" property="updateDate"/>
+				</resultMap>
+
+				<!-- Result Map for Inspection Work Details -->
+				<resultMap id="inspectionWorkResultMap" type="com.example.skn.dto.InspectionWorkDto">
+						<id column="id" property="id"/>
+						<result column="work_order_id" property="workOrderId"/>
+						<result column="work_cd" property="workCd"/>
+						<result column="work_name" property="workName"/>
+						<result column="work_type" property="workType"/>
+						<result column="kousuu" property="kousuu"/>
+						<result column="tanka" property="tanka"/>
+						<result column="kingaku" property="kingaku"/>
+						<result column="status" property="status"/>
+						<result column="inspect_date" property="inspectDate"/>
+						<result column="inspector_id" property="inspectorId"/>
+						<result column="inspector_name" property="inspectorName"/>
+						<result column="result" property="result"/>
+						<result column="comment" property="comment"/>
+						<result column="delete_flg" property="deleteFlg"/>
+						<result column="create_user_id" property="createUserId"/>
+						<result column="create_date" property="createDate"/>
+						<result column="update_user_id" property="updateUserId"/>
+						<result column="update_date" property="updateDate"/>
+				</resultMap>
+
+				<!-- Result Map for Work Order -->
+				<resultMap id="workOrderResultMap" type="com.example.skn.dto.WorkOrderDto">
+						<id column="work_order_id" property="workOrderId"/>
+						<result column="order_no" property="orderNo"/>
+						<result column="order_date" property="orderDate"/>
+						<result column="customer_id" property="customerId"/>
+						<result column="customer_name" property="customerName"/>
+						<result column="delivery_date" property="deliveryDate"/>
+						<result column="total_amount" property="totalAmount"/>
+						<result column="status" property="status"/>
+						<result column="remarks" property="remarks"/>
+						<result column="create_user_id" property="createUserId"/>
+						<result column="create_date" property="createDate"/>
+						<result column="update_user_id" property="updateUserId"/>
+						<result column="update_date" property="updateDate"/>
+				</resultMap>
+
+				<!-- Result Map for Export Log -->
+				<resultMap id="exportLogResultMap" type="com.example.skn.dto.ExportLogDto">
+						<id column="log_id" property="logId"/>
+						<result column="export_type" property="exportType"/>
+						<result column="export_date" property="exportDate"/>
+						<result column="user_id" property="userId"/>
+						<result column="user_name" property="userName"/>
+						<result column="record_count" property="recordCount"/>
+						<result column="file_name" property="fileName"/>
+						<result column="file_path" property="filePath"/>
+						<result column="status" property="status"/>
+						<result column="error_message" property="errorMessage"/>
+						<result column="create_date" property="createDate"/>
+				</resultMap>
+
+				<!-- Result Map for Meisai Link -->
+				<resultMap id="meisaiLinkResultMap" type="com.example.skn.dto.MeisaiLinkDto">
+						<id column="id" property="id"/>
+						<result column="work_order_id" property="workOrderId"/>
+						<result column="meisai_no" property="meisaiNo"/>
+						<result column="hinmoku_cd" property="hinmokuCd"/>
+						<result column="hinmoku_name" property="hinmokuName"/>
+						<result column="spec" property="spec"/>
+						<result column="quantity" property="quantity"/>
+						<result column="unit" property="unit"/>
+						<result column="tanka" property="tanka"/>
+						<result column="kingaku" property="kingaku"/>
+						<result column="delete_flg" property="deleteFlg"/>
+						<result column="create_user_id" property="createUserId"/>
+						<result column="create_date" property="createDate"/>
+						<result column="update_user_id" property="updateUserId"/>
+						<result column="update_date" property="updateDate"/>
+				</resultMap>
+
+				<!-- ========================================
+						SQL Fragments for Reusability
+						======================================== -->
+
+				<!-- Common columns for t_skn_hiyou_inspect_work -->
+				<sql id="inspectionWorkColumns">
+						t_skn_hiyou_inspect_work.id,
+						t_skn_hiyou_inspect_work.work_order_id,
+						t_skn_hiyou_inspect_work.work_cd,
+						t_skn_hiyou_inspect_work.work_name,
+						t_skn_hiyou_inspect_work.work_type,
+						t_skn_hiyou_inspect_work.kousuu,
+						t_skn_hiyou_inspect_work.tanka,
+						t_skn_hiyou_inspect_work.kingaku,
+						t_skn_hiyou_inspect_work.status,
+						t_skn_hiyou_inspect_work.inspect_date,
+						t_skn_hiyou_inspect_work.inspector_id,
+						t_skn_hiyou_inspect_work.result,
+						t_skn_hiyou_inspect_work.comment,
+						t_skn_hiyou_inspect_work.delete_flg,
+						t_skn_hiyou_inspect_work.create_user_id,
+						t_skn_hiyou_inspect_work.create_date,
+						t_skn_hiyou_inspect_work.update_user_id,
+						t_skn_hiyou_inspect_work.update_date
+				</sql>
+
+				<!-- Common WHERE conditions for active records -->
+				<sql id="activeRecordCondition">
+						AND delete_flg = 0
+				</sql>
+
+				<!-- Common ORDER BY for work records -->
+				<sql id="workOrderSort">
+						ORDER BY work_cd, meisai_no
+				</sql>
+
+				<!-- Date range condition -->
+				<sql id="dateRangeCondition">
+						<if test="dateFrom != null">
+								AND create_date &gt;= #{dateFrom}
+						</if>
+						<if test="dateTo != null">
+								AND create_date &lt;= #{dateTo}
+						</if>
+				</sql>
+
+				<!-- ========================================
+						Main Export Queries (Line 289 area)
+						======================================== -->
+
+				<!-- Main export query for NTX data -->
+				<select id="selectExportNtxData" resultMap="exportNtxResultMap" parameterType="map">
+						SELECT
+								t_skn_hiyou_inspect_work.work_cd,
+								CASE WHEN kousuu &lt;![CDATA[<]]&gt; 0
+										THEN 0
+										ELSE kousuu
+								END AS kousuu,
+								t_skn_hiyou_meisai_link.id AS meisaiId,
+								t_skn_hiyou_inspect_work.id AS seibiId,
+								0 AS manualSeibiId,
+								t_skn_hiyou_inspect_work.work_name,
+								t_skn_hiyou_inspect_work.work_type,
+								t_skn_hiyou_inspect_work.status,
+								t_skn_hiyou_inspect_work.create_date,
+								t_skn_hiyou_inspect_work.update_date
+						FROM
+								t_skn_hiyou_inspect_work
+						INNER JOIN
+								t_skn_hiyou_meisai_link
+								ON t_skn_hiyou_inspect_work.hiyou_meisai_link_id = t_skn_hiyou_meisai_link.id
+						WHERE
+								t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								<include refid="activeRecordCondition"/>
+								<if test="workType != null">
+										AND t_skn_hiyou_inspect_work.work_type = #{workType}
+								</if>
+								<if test="status != null">
+										AND t_skn_hiyou_inspect_work.status = #{status}
+								</if>
+								<include refid="dateRangeCondition"/>
+						<include refid="workOrderSort"/>
+				</select>
+
+				<!-- Export NTX data with details -->
+				<select id="selectExportNtxDataWithDetails" resultMap="exportNtxResultMap">
+						SELECT
+								t_skn_hiyou_inspect_work.id,
+								t_skn_hiyou_inspect_work.work_cd,
+								t_skn_hiyou_inspect_work.work_name,
+								t_skn_hiyou_inspect_work.work_type,
+								CASE 
+										WHEN t_skn_hiyou_inspect_work.kousuu &lt; 0 THEN 0
+										WHEN t_skn_hiyou_inspect_work.kousuu IS NULL THEN 0
+										ELSE t_skn_hiyou_inspect_work.kousuu
+								END AS kousuu,
+								t_skn_hiyou_inspect_work.tanka,
+								t_skn_hiyou_inspect_work.kingaku,
+								t_skn_hiyou_meisai_link.id AS meisaiId,
+								t_skn_hiyou_inspect_work.id AS seibiId,
+								0 AS manualSeibiId,
+								t_skn_hiyou_inspect_work.status,
+								t_skn_hiyou_inspect_work.inspect_date,
+								t_skn_hiyou_inspect_work.inspector_id,
+								m_user.user_name AS inspector_name,
+								t_skn_hiyou_inspect_work.result,
+								t_skn_hiyou_inspect_work.comment,
+								t_skn_hiyou_inspect_work.create_date,
+								t_skn_hiyou_inspect_work.update_date
+						FROM
+								t_skn_hiyou_inspect_work
+						INNER JOIN
+								t_skn_hiyou_meisai_link
+								ON t_skn_hiyou_inspect_work.hiyou_meisai_link_id = t_skn_hiyou_meisai_link.id
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								AND t_skn_hiyou_inspect_work.delete_flg = 0
+								AND t_skn_hiyou_meisai_link.delete_flg = 0
+						ORDER BY
+								t_skn_hiyou_inspect_work.work_cd,
+								t_skn_hiyou_meisai_link.meisai_no
+				</select>
+
+				<!-- Export NTX summary data -->
+				<select id="selectExportNtxSummary" resultType="map">
+						SELECT
+								t_skn_hiyou_inspect_work.work_type,
+								COUNT(*) AS work_count,
+								SUM(CASE WHEN kousuu &lt; 0 THEN 0 ELSE kousuu END) AS total_kousuu,
+								SUM(kingaku) AS total_kingaku,
+								AVG(CASE WHEN kousuu &lt; 0 THEN 0 ELSE kousuu END) AS avg_kousuu
+						FROM
+								t_skn_hiyou_inspect_work
+						INNER JOIN
+								t_skn_hiyou_meisai_link
+								ON t_skn_hiyou_inspect_work.hiyou_meisai_link_id = t_skn_hiyou_meisai_link.id
+						WHERE
+								t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								AND t_skn_hiyou_inspect_work.delete_flg = 0
+						GROUP BY
+								t_skn_hiyou_inspect_work.work_type
+						ORDER BY
+								t_skn_hiyou_inspect_work.work_type
+				</select>
+
+				<!-- ========================================
+						Inspection Work Queries
+						======================================== -->
+
+				<!-- Select all inspection work by work order -->
+				<select id="selectInspectionWorkByOrderId" resultMap="inspectionWorkResultMap">
+						SELECT
+								<include refid="inspectionWorkColumns"/>,
+								m_user.user_name AS inspector_name
+						FROM
+								t_skn_hiyou_inspect_work
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								<include refid="activeRecordCondition"/>
+						ORDER BY
+								t_skn_hiyou_inspect_work.work_cd
+				</select>
+
+				<!-- Select inspection work by ID -->
+				<select id="selectInspectionWorkById" resultMap="inspectionWorkResultMap">
+						SELECT
+								<include refid="inspectionWorkColumns"/>,
+								m_user.user_name AS inspector_name
+						FROM
+								t_skn_hiyou_inspect_work
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.id = #{id}
+				</select>
+
+				<!-- Select inspection work by work code -->
+				<select id="selectInspectionWorkByWorkCd" resultMap="inspectionWorkResultMap">
+						SELECT
+								<include refid="inspectionWorkColumns"/>
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								t_skn_hiyou_inspect_work.work_cd = #{workCd}
+								AND t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								<include refid="activeRecordCondition"/>
+				</select>
+
+				<!-- Select inspection work by status -->
+				<select id="selectInspectionWorkByStatus" resultMap="inspectionWorkResultMap">
+						SELECT
+								<include refid="inspectionWorkColumns"/>,
+								m_user.user_name AS inspector_name
+						FROM
+								t_skn_hiyou_inspect_work
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.status = #{status}
+								<include refid="activeRecordCondition"/>
+								<if test="workOrderId != null">
+										AND t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								</if>
+						ORDER BY
+								t_skn_hiyou_inspect_work.inspect_date DESC
+				</select>
+
+				<!-- Select inspection work by date range -->
+				<select id="selectInspectionWorkByDateRange" resultMap="inspectionWorkResultMap">
+						SELECT
+								<include refid="inspectionWorkColumns"/>,
+								m_user.user_name AS inspector_name
+						FROM
+								t_skn_hiyou_inspect_work
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.inspect_date BETWEEN #{dateFrom} AND #{dateTo}
+								<include refid="activeRecordCondition"/>
+								<if test="workType != null">
+										AND t_skn_hiyou_inspect_work.work_type = #{workType}
+								</if>
+						ORDER BY
+								t_skn_hiyou_inspect_work.inspect_date DESC,
+								t_skn_hiyou_inspect_work.work_cd
+				</select>
+
+				<!-- Select inspection work with meisai details -->
+				<select id="selectInspectionWorkWithMeisai" resultMap="inspectionWorkResultMap">
+						SELECT
+								t_skn_hiyou_inspect_work.id,
+								t_skn_hiyou_inspect_work.work_order_id,
+								t_skn_hiyou_inspect_work.work_cd,
+								t_skn_hiyou_inspect_work.work_name,
+								t_skn_hiyou_inspect_work.work_type,
+								t_skn_hiyou_inspect_work.kousuu,
+								t_skn_hiyou_inspect_work.tanka,
+								t_skn_hiyou_inspect_work.kingaku,
+								t_skn_hiyou_inspect_work.status,
+								t_skn_hiyou_inspect_work.inspect_date,
+								t_skn_hiyou_inspect_work.inspector_id,
+								m_user.user_name AS inspector_name,
+								t_skn_hiyou_inspect_work.result,
+								t_skn_hiyou_inspect_work.comment,
+								t_skn_hiyou_inspect_work.delete_flg,
+								t_skn_hiyou_inspect_work.create_user_id,
+								t_skn_hiyou_inspect_work.create_date,
+								t_skn_hiyou_inspect_work.update_user_id,
+								t_skn_hiyou_inspect_work.update_date,
+								t_skn_hiyou_meisai_link.meisai_no,
+								t_skn_hiyou_meisai_link.hinmoku_cd,
+								t_skn_hiyou_meisai_link.hinmoku_name
+						FROM
+								t_skn_hiyou_inspect_work
+						INNER JOIN
+								t_skn_hiyou_meisai_link
+								ON t_skn_hiyou_inspect_work.hiyou_meisai_link_id = t_skn_hiyou_meisai_link.id
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								AND t_skn_hiyou_inspect_work.delete_flg = 0
+								AND t_skn_hiyou_meisai_link.delete_flg = 0
+						ORDER BY
+								t_skn_hiyou_inspect_work.work_cd,
+								t_skn_hiyou_meisai_link.meisai_no
+				</select>
+
+				<!-- Count inspection work by work order -->
+				<select id="countInspectionWorkByOrderId" resultType="int">
+						SELECT
+								COUNT(*)
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								work_order_id = #{workOrderId}
+								<include refid="activeRecordCondition"/>
+				</select>
+
+				<!-- Count inspection work by status -->
+				<select id="countInspectionWorkByStatus" resultType="int">
+						SELECT
+								COUNT(*)
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								status = #{status}
+								<include refid="activeRecordCondition"/>
+								<if test="workOrderId != null">
+										AND work_order_id = #{workOrderId}
+								</if>
+				</select>
+
+				<!-- ========================================
+						Insert Queries
+						======================================== -->
+
+				<!-- Insert inspection work -->
+				<insert id="insertInspectionWork" parameterType="com.example.skn.dto.InspectionWorkDto" 
+								useGeneratedKeys="true" keyProperty="id">
+						INSERT INTO t_skn_hiyou_inspect_work (
+								work_order_id,
+								work_cd,
+								work_name,
+								work_type,
+								hiyou_meisai_link_id,
+								kousuu,
+								tanka,
+								kingaku,
+								status,
+								inspect_date,
+								inspector_id,
+								result,
+								comment,
+								delete_flg,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						) VALUES (
+								#{workOrderId},
+								#{workCd},
+								#{workName},
+								#{workType},
+								#{hiyouMeisaiLinkId},
+								#{kousuu},
+								#{tanka},
+								#{kingaku},
+								#{status},
+								#{inspectDate},
+								#{inspectorId},
+								#{result},
+								#{comment},
+								0,
+								#{createUserId},
+								NOW(),
+								#{updateUserId},
+								NOW()
+						)
+				</insert>
+
+				<!-- Insert batch inspection work -->
+				<insert id="insertInspectionWorkBatch" parameterType="list">
+						INSERT INTO t_skn_hiyou_inspect_work (
+								work_order_id,
+								work_cd,
+								work_name,
+								work_type,
+								hiyou_meisai_link_id,
+								kousuu,
+								tanka,
+								kingaku,
+								status,
+								inspect_date,
+								inspector_id,
+								result,
+								comment,
+								delete_flg,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						) VALUES
+						<foreach collection="list" item="item" separator=",">
+								(
+										#{item.workOrderId},
+										#{item.workCd},
+										#{item.workName},
+										#{item.workType},
+										#{item.hiyouMeisaiLinkId},
+										#{item.kousuu},
+										#{item.tanka},
+										#{item.kingaku},
+										#{item.status},
+										#{item.inspectDate},
+										#{item.inspectorId},
+										#{item.result},
+										#{item.comment},
+										0,
+										#{item.createUserId},
+										NOW(),
+										#{item.updateUserId},
+										NOW()
+								)
+						</foreach>
+				</insert>
+
+				<!-- Insert export log -->
+				<insert id="insertExportLog" parameterType="com.example.skn.dto.ExportLogDto"
+								useGeneratedKeys="true" keyProperty="logId">
+						INSERT INTO t_skn_export_log (
+								export_type,
+								export_date,
+								user_id,
+								record_count,
+								file_name,
+								file_path,
+								status,
+								error_message,
+								create_date
+						) VALUES (
+								#{exportType},
+								#{exportDate},
+								#{userId},
+								#{recordCount},
+								#{fileName},
+								#{filePath},
+								#{status},
+								#{errorMessage},
+								NOW()
+						)
+				</insert>
+
+				<!-- Insert meisai link -->
+				<insert id="insertMeisaiLink" parameterType="com.example.skn.dto.MeisaiLinkDto"
+								useGeneratedKeys="true" keyProperty="id">
+						INSERT INTO t_skn_hiyou_meisai_link (
+								work_order_id,
+								meisai_no,
+								hinmoku_cd,
+								hinmoku_name,
+								spec,
+								quantity,
+								unit,
+								tanka,
+								kingaku,
+								delete_flg,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						) VALUES (
+								#{workOrderId},
+								#{meisaiNo},
+								#{hinmokuCd},
+								#{hinmokuName},
+								#{spec},
+								#{quantity},
+								#{unit},
+								#{tanka},
+								#{kingaku},
+								0,
+								#{createUserId},
+								NOW(),
+								#{updateUserId},
+								NOW()
+						)
+				</insert>
+
+				<!-- ========================================
+						Update Queries
+						======================================== -->
+
+				<!-- Update inspection work -->
+				<update id="updateInspectionWork" parameterType="com.example.skn.dto.InspectionWorkDto">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								work_name = #{workName},
+								work_type = #{workType},
+								kousuu = #{kousuu},
+								tanka = #{tanka},
+								kingaku = #{kingaku},
+								status = #{status},
+								inspect_date = #{inspectDate},
+								inspector_id = #{inspectorId},
+								result = #{result},
+								comment = #{comment},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id = #{id}
+				</update>
+
+				<!-- Update inspection work status -->
+				<update id="updateInspectionWorkStatus">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								status = #{status},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id = #{id}
+				</update>
+
+				<!-- Update export flag -->
+				<update id="updateExportFlag">
+						UPDATE t_skn_hiyou_inspect_work
+						SET 
+								export_flg = 1,
+								export_date = #{exportDate},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id = #{id}
+				</update>
+
+				<!-- Update batch export flag -->
+				<update id="updateExportFlagBatch">
+						UPDATE t_skn_hiyou_inspect_work
+						SET 
+								export_flg = 1,
+								export_date = #{exportDate},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id IN
+								<foreach collection="idList" item="id" open="(" separator="," close=")">
+										#{id}
+								</foreach>
+				</update>
+
+				<!-- Update inspection work result -->
+				<update id="updateInspectionWorkResult">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								result = #{result},
+								comment = #{comment},
+								status = CASE 
+										WHEN #{result} = 'OK' THEN '3'
+										WHEN #{result} = 'NG' THEN '4'
+										ELSE status
+								END,
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id = #{id}
+				</update>
+
+				<!-- Update meisai link -->
+				<update id="updateMeisaiLink" parameterType="com.example.skn.dto.MeisaiLinkDto">
+						UPDATE t_skn_hiyou_meisai_link
+						SET
+								hinmoku_cd = #{hinmokuCd},
+								hinmoku_name = #{hinmokuName},
+								spec = #{spec},
+								quantity = #{quantity},
+								unit = #{unit},
+								tanka = #{tanka},
+								kingaku = #{kingaku},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id = #{id}
+				</update>
+
+				<!-- ========================================
+						Delete Queries (Logical Delete)
+						======================================== -->
+
+				<!-- Delete inspection work (logical) -->
+				<update id="deleteInspectionWork">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								delete_flg = 1,
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id = #{id}
+				</update>
+
+				<!-- Delete batch inspection work (logical) -->
+				<update id="deleteInspectionWorkBatch">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								delete_flg = 1,
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id IN
+								<foreach collection="idList" item="id" open="(" separator="," close=")">
+										#{id}
+								</foreach>
+				</update>
+
+				<!-- Delete meisai link (logical) -->
+				<update id="deleteMeisaiLink">
+						UPDATE t_skn_hiyou_meisai_link
+						SET
+								delete_flg = 1,
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id = #{id}
+				</update>
+
+				<!-- Delete all inspection work by work order (logical) -->
+				<update id="deleteInspectionWorkByOrderId">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								delete_flg = 1,
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								work_order_id = #{workOrderId}
+				</update>
+
+				<!-- ========================================
+						Work Order Related Queries
+						======================================== -->
+
+				<!-- Select work order by ID -->
+				<select id="selectWorkOrderById" resultMap="workOrderResultMap">
+						SELECT
+								work_order_id,
+								order_no,
+								order_date,
+								customer_id,
+								customer_name,
+								delivery_date,
+								total_amount,
+								status,
+								remarks,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						FROM
+								t_skn_work_order
+						WHERE
+								work_order_id = #{workOrderId}
+								AND delete_flg = 0
+				</select>
+
+				<!-- Select work orders by customer -->
+				<select id="selectWorkOrderByCustomer" resultMap="workOrderResultMap">
+						SELECT
+								work_order_id,
+								order_no,
+								order_date,
+								customer_id,
+								customer_name,
+								delivery_date,
+								total_amount,
+								status,
+								remarks,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						FROM
+								t_skn_work_order
+						WHERE
+								customer_id = #{customerId}
+								AND delete_flg = 0
+						ORDER BY
+								order_date DESC
+				</select>
+
+				<!-- Select work orders by date range -->
+				<select id="selectWorkOrderByDateRange" resultMap="workOrderResultMap">
+						SELECT
+								work_order_id,
+								order_no,
+								order_date,
+								customer_id,
+								customer_name,
+								delivery_date,
+								total_amount,
+								status,
+								remarks,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						FROM
+								t_skn_work_order
+						WHERE
+								order_date BETWEEN #{dateFrom} AND #{dateTo}
+								AND delete_flg = 0
+								<if test="status != null">
+									AND status = #{status}
+								</if>
+						ORDER BY
+								order_date DESC
+				</select>
+
+				<!-- Select work orders by status -->
+				<select id="selectWorkOrderByStatus" resultMap="workOrderResultMap">
+						SELECT
+								work_order_id,
+								order_no,
+								order_date,
+								customer_id,
+								customer_name,
+								delivery_date,
+								total_amount,
+								status,
+								remarks,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						FROM
+								t_skn_work_order
+						WHERE
+								status = #{status}
+								AND delete_flg = 0
+						ORDER BY
+								order_date DESC
+				</select>
+
+				<!-- ========================================
+						Meisai Link Related Queries
+						======================================== -->
+
+				<!-- Select meisai links by work order -->
+				<select id="selectMeisaiLinkByOrderId" resultMap="meisaiLinkResultMap">
+						SELECT
+								id,
+								work_order_id,
+								meisai_no,
+								hinmoku_cd,
+								hinmoku_name,
+								spec,
+								quantity,
+								unit,
+								tanka,
+								kingaku,
+								delete_flg,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						FROM
+								t_skn_hiyou_meisai_link
+						WHERE
+								work_order_id = #{workOrderId}
+								AND delete_flg = 0
+						ORDER BY
+								meisai_no
+				</select>
+
+				<!-- Select meisai link by ID -->
+				<select id="selectMeisaiLinkById" resultMap="meisaiLinkResultMap">
+						SELECT
+								id,
+								work_order_id,
+								meisai_no,
+								hinmoku_cd,
+								hinmoku_name,
+								spec,
+								quantity,
+								unit,
+								tanka,
+								kingaku,
+								delete_flg,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						FROM
+								t_skn_hiyou_meisai_link
+						WHERE
+								id = #{id}
+				</select>
+
+				<!-- Select meisai links by hinmoku code -->
+				<select id="selectMeisaiLinkByHinmokuCd" resultMap="meisaiLinkResultMap">
+						SELECT
+								id,
+								work_order_id,
+								meisai_no,
+								hinmoku_cd,
+								hinmoku_name,
+								spec,
+								quantity,
+								unit,
+								tanka,
+								kingaku,
+								delete_flg,
+								create_user_id,
+								create_date,
+								update_user_id,
+								update_date
+						FROM
+								t_skn_hiyou_meisai_link
+						WHERE
+								hinmoku_cd = #{hinmokuCd}
+								AND delete_flg = 0
+						ORDER BY
+								create_date DESC
+				</select>
+
+				<!-- Count meisai links by work order -->
+				<select id="countMeisaiLinkByOrderId" resultType="int">
+						SELECT
+								COUNT(*)
+						FROM
+								t_skn_hiyou_meisai_link
+						WHERE
+								work_order_id = #{workOrderId}
+								AND delete_flg = 0
+				</select>
+
+				<!-- ========================================
+						Export Log Related Queries
+						======================================== -->
+
+				<!-- Select export logs by date range -->
+				<select id="selectExportLogByDateRange" resultMap="exportLogResultMap">
+						SELECT
+								t_skn_export_log.log_id,
+								t_skn_export_log.export_type,
+								t_skn_export_log.export_date,
+								t_skn_export_log.user_id,
+								m_user.user_name,
+								t_skn_export_log.record_count,
+								t_skn_export_log.file_name,
+								t_skn_export_log.file_path,
+								t_skn_export_log.status,
+								t_skn_export_log.error_message,
+								t_skn_export_log.create_date
+						FROM
+								t_skn_export_log
+						LEFT JOIN
+								m_user
+								ON t_skn_export_log.user_id = m_user.user_id
+						WHERE
+								t_skn_export_log.export_date BETWEEN #{dateFrom} AND #{dateTo}
+								<if test="exportType != null">
+										AND t_skn_export_log.export_type = #{exportType}
+								</if>
+								<if test="status != null">
+										AND t_skn_export_log.status = #{status}
+								</if>
+						ORDER BY
+								t_skn_export_log.export_date DESC
+				</select>
+
+				<!-- Select export log by ID -->
+				<select id="selectExportLogById" resultMap="exportLogResultMap">
+						SELECT
+								t_skn_export_log.log_id,
+								t_skn_export_log.export_type,
+								t_skn_export_log.export_date,
+								t_skn_export_log.user_id,
+								m_user.user_name,
+								t_skn_export_log.record_count,
+								t_skn_export_log.file_name,
+								t_skn_export_log.file_path,
+								t_skn_export_log.status,
+								t_skn_export_log.error_message,
+								t_skn_export_log.create_date
+						FROM
+								t_skn_export_log
+						LEFT JOIN
+								m_user
+								ON t_skn_export_log.user_id = m_user.user_id
+						WHERE
+								t_skn_export_log.log_id = #{logId}
+				</select>
+
+				<!-- Select latest export logs by type -->
+				<select id="selectLatestExportLogsByType" resultMap="exportLogResultMap">
+						SELECT
+								t_skn_export_log.log_id,
+								t_skn_export_log.export_type,
+								t_skn_export_log.export_date,
+								t_skn_export_log.user_id,
+								m_user.user_name,
+								t_skn_export_log.record_count,
+								t_skn_export_log.file_name,
+								t_skn_export_log.file_path,
+								t_skn_export_log.status,
+								t_skn_export_log.error_message,
+								t_skn_export_log.create_date
+						FROM
+								t_skn_export_log
+						LEFT JOIN
+								m_user
+								ON t_skn_export_log.user_id = m_user.user_id
+						WHERE
+								t_skn_export_log.export_type = #{exportType}
+						ORDER BY
+								t_skn_export_log.export_date DESC
+						LIMIT #{limit}
+				</select>
+
+				<!-- Update export log status -->
+				<update id="updateExportLogStatus">
+						UPDATE t_skn_export_log
+						SET
+								status = #{status},
+								error_message = #{errorMessage}
+						WHERE
+								log_id = #{logId}
+				</update>
+
+				<!-- ========================================
+						Statistics and Summary Queries
+						======================================== -->
+
+				<!-- Get inspection work statistics by work order -->
+				<select id="getInspectionWorkStatsByOrderId" resultType="map">
+						SELECT
+								COUNT(*) AS total_count,
+								SUM(CASE WHEN status = '1' THEN 1 ELSE 0 END) AS pending_count,
+								SUM(CASE WHEN status = '2' THEN 1 ELSE 0 END) AS in_progress_count,
+								SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) AS completed_count,
+								SUM(CASE WHEN status = '4' THEN 1 ELSE 0 END) AS ng_count,
+								SUM(CASE WHEN kousuu &lt; 0 THEN 0 ELSE kousuu END) AS total_kousuu,
+								SUM(kingaku) AS total_kingaku,
+								AVG(CASE WHEN kousuu &lt; 0 THEN 0 ELSE kousuu END) AS avg_kousuu,
+								AVG(kingaku) AS avg_kingaku
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								work_order_id = #{workOrderId}
+								AND delete_flg = 0
+				</select>
+
+				<!-- Get inspection work statistics by work type -->
+				<select id="getInspectionWorkStatsByType" resultType="map">
+						SELECT
+								work_type,
+								COUNT(*) AS work_count,
+								SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) AS completed_count,
+								SUM(CASE WHEN status = '4' THEN 1 ELSE 0 END) AS ng_count,
+								SUM(CASE WHEN kousuu &lt; 0 THEN 0 ELSE kousuu END) AS total_kousuu,
+								SUM(kingaku) AS total_kingaku
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								delete_flg = 0
+								<if test="dateFrom != null">
+										AND create_date &gt;= #{dateFrom}
+								</if>
+								<if test="dateTo != null">
+										AND create_date &lt;= #{dateTo}
+								</if>
+						GROUP BY
+								work_type
+						ORDER BY
+								work_type
+				</select>
+
+				<!-- Get inspection work statistics by inspector -->
+				<select id="getInspectionWorkStatsByInspector" resultType="map">
+						SELECT
+								t_skn_hiyou_inspect_work.inspector_id,
+								m_user.user_name AS inspector_name,
+								COUNT(*) AS work_count,
+								SUM(CASE WHEN t_skn_hiyou_inspect_work.status = '3' THEN 1 ELSE 0 END) AS completed_count,
+								SUM(CASE WHEN t_skn_hiyou_inspect_work.status = '4' THEN 1 ELSE 0 END) AS ng_count,
+								ROUND(
+										CAST(SUM(CASE WHEN t_skn_hiyou_inspect_work.status = '3' THEN 1 ELSE 0 END) AS DECIMAL) / 
+										CAST(COUNT(*) AS DECIMAL) * 100, 
+										2
+								) AS ok_rate
+						FROM
+								t_skn_hiyou_inspect_work
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.delete_flg = 0
+								<if test="dateFrom != null">
+										AND t_skn_hiyou_inspect_work.inspect_date &gt;= #{dateFrom}
+								</if>
+								<if test="dateTo != null">
+										AND t_skn_hiyou_inspect_work.inspect_date &lt;= #{dateTo}
+								</if>
+						GROUP BY
+								t_skn_hiyou_inspect_work.inspector_id,
+								m_user.user_name
+						ORDER BY
+								work_count DESC
+				</select>
+
+				<!-- Get daily inspection work summary -->
+				<select id="getDailyInspectionWorkSummary" resultType="map">
+						SELECT
+								DATE(inspect_date) AS inspect_date,
+								COUNT(*) AS work_count,
+								SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) AS ok_count,
+								SUM(CASE WHEN status = '4' THEN 1 ELSE 0 END) AS ng_count,
+								SUM(CASE WHEN kousuu &lt; 0 THEN 0 ELSE kousuu END) AS total_kousuu,
+								SUM(kingaku) AS total_kingaku
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								inspect_date BETWEEN #{dateFrom} AND #{dateTo}
+								AND delete_flg = 0
+						GROUP BY
+								DATE(inspect_date)
+						ORDER BY
+								DATE(inspect_date)
+				</select>
+
+				<!-- Get monthly inspection work summary -->
+				<select id="getMonthlyInspectionWorkSummary" resultType="map">
+						SELECT
+								DATE_FORMAT(inspect_date, '%Y-%m') AS year_month,
+								COUNT(*) AS work_count,
+								SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) AS ok_count,
+								SUM(CASE WHEN status = '4' THEN 1 ELSE 0 END) AS ng_count,
+								ROUND(
+										CAST(SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) AS DECIMAL) / 
+										CAST(COUNT(*) AS DECIMAL) * 100, 
+										2
+								) AS ok_rate,
+								SUM(CASE WHEN kousuu &lt; 0 THEN 0 ELSE kousuu END) AS total_kousuu,
+								SUM(kingaku) AS total_kingaku
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								inspect_date BETWEEN #{dateFrom} AND #{dateTo}
+								AND delete_flg = 0
+						GROUP BY
+								DATE_FORMAT(inspect_date, '%Y-%m')
+						ORDER BY
+								DATE_FORMAT(inspect_date, '%Y-%m')
+				</select>
+
+				<!-- ========================================
+						Search Queries with Dynamic Conditions
+						======================================== -->
+
+				<!-- Search inspection work with multiple conditions -->
+				<select id="searchInspectionWork" resultMap="inspectionWorkResultMap">
+						SELECT
+								<include refid="inspectionWorkColumns"/>,
+								m_user.user_name AS inspector_name
+						FROM
+								t_skn_hiyou_inspect_work
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.delete_flg = 0
+								<if test="workOrderId != null">
+										AND t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								</if>
+								<if test="workCd != null and workCd != ''">
+										AND t_skn_hiyou_inspect_work.work_cd LIKE CONCAT('%', #{workCd}, '%')
+								</if>
+								<if test="workName != null and workName != ''">
+										AND t_skn_hiyou_inspect_work.work_name LIKE CONCAT('%', #{workName}, '%')
+								</if>
+								<if test="workType != null">
+										AND t_skn_hiyou_inspect_work.work_type = #{workType}
+								</if>
+								<if test="status != null">
+										AND t_skn_hiyou_inspect_work.status = #{status}
+								</if>
+								<if test="inspectorId != null">
+										AND t_skn_hiyou_inspect_work.inspector_id = #{inspectorId}
+								</if>
+								<if test="result != null and result != ''">
+										AND t_skn_hiyou_inspect_work.result = #{result}
+								</if>
+								<if test="inspectDateFrom != null">
+										AND t_skn_hiyou_inspect_work.inspect_date &gt;= #{inspectDateFrom}
+								</if>
+								<if test="inspectDateTo != null">
+										AND t_skn_hiyou_inspect_work.inspect_date &lt;= #{inspectDateTo}
+								</if>
+								<if test="kingakuFrom != null">
+										AND t_skn_hiyou_inspect_work.kingaku &gt;= #{kingakuFrom}
+								</if>
+								<if test="kingakuTo != null">
+										AND t_skn_hiyou_inspect_work.kingaku &lt;= #{kingakuTo}
+								</if>
+						ORDER BY
+								<choose>
+										<when test="sortBy == 'workCd'">
+												t_skn_hiyou_inspect_work.work_cd ${sortOrder}
+										</when>
+										<when test="sortBy == 'inspectDate'">
+												t_skn_hiyou_inspect_work.inspect_date ${sortOrder}
+										</when>
+										<when test="sortBy == 'kingaku'">
+												t_skn_hiyou_inspect_work.kingaku ${sortOrder}
+										</when>
+										<otherwise>
+												t_skn_hiyou_inspect_work.create_date DESC
+										</otherwise>
+								</choose>
+						<if test="limit != null">
+								LIMIT #{limit}
+						</if>
+						<if test="offset != null">
+								OFFSET #{offset}
+						</if>
+				</select>
+
+				<!-- Count search results -->
+				<select id="countSearchInspectionWork" resultType="int">
+						SELECT
+								COUNT(*)
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								delete_flg = 0
+								<if test="workOrderId != null">
+										AND work_order_id = #{workOrderId}
+								</if>
+								<if test="workCd != null and workCd != ''">
+										AND work_cd LIKE CONCAT('%', #{workCd}, '%')
+								</if>
+								<if test="workName != null and workName != ''">
+										AND work_name LIKE CONCAT('%', #{workName}, '%')
+								</if>
+								<if test="workType != null">
+										AND work_type = #{workType}
+								</if>
+								<if test="status != null">
+										AND status = #{status}
+								</if>
+								<if test="inspectorId != null">
+										AND inspector_id = #{inspectorId}
+								</if>
+								<if test="result != null and result != ''">
+										AND result = #{result}
+								</if>
+								<if test="inspectDateFrom != null">
+										AND inspect_date &gt;= #{inspectDateFrom}
+								</if>
+								<if test="inspectDateTo != null">
+										AND inspect_date &lt;= #{inspectDateTo}
+								</if>
+								<if test="kingakuFrom != null">
+										AND kingaku &gt;= #{kingakuFrom}
+								</if>
+								<if test="kingakuTo != null">
+										AND kingaku &lt;= #{kingakuTo}
+								</if>
+				</select>
+
+				<!-- ========================================
+						Master Data Queries
+						======================================== -->
+
+				<!-- Select work types -->
+				<select id="selectWorkTypes" resultType="map">
+						SELECT
+								type_cd AS code,
+								type_name AS name,
+								type_abbr AS abbreviation,
+								display_order
+						FROM
+								m_work_type
+						WHERE
+								valid_flg = 1
+						ORDER BY
+								display_order
+				</select>
+
+				<!-- Select work statuses -->
+				<select id="selectWorkStatuses" resultType="map">
+						SELECT
+								status_cd AS code,
+								status_name AS name,
+								display_order
+						FROM
+								m_work_status
+						WHERE
+								valid_flg = 1
+						ORDER BY
+								display_order
+				</select>
+
+				<!-- Select inspectors -->
+				<select id="selectInspectors" resultType="map">
+						SELECT
+								user_id,
+								user_name,
+								user_kana,
+								department_cd,
+								department_name
+						FROM
+								m_user
+						WHERE
+								user_type = 'INSPECTOR'
+								AND valid_flg = 1
+						ORDER BY
+								user_kana
+				</select>
+
+				<!-- Select customers -->
+				<select id="selectCustomers" resultType="map">
+						SELECT
+								customer_id,
+								customer_cd,
+								customer_name,
+								customer_kana,
+								postal_code,
+								address,
+								tel,
+								fax,
+								email
+						FROM
+								m_customer
+						WHERE
+								valid_flg = 1
+						ORDER BY
+								customer_kana
+				</select>
+
+				<!-- Select hinmoku (products/parts) -->
+				<select id="selectHinmoku" resultType="map">
+						SELECT
+								hinmoku_cd,
+								hinmoku_name,
+								hinmoku_kana,
+								spec,
+								unit,
+								standard_tanka,
+								category_cd,
+								category_name
+						FROM
+								m_hinmoku
+						WHERE
+								valid_flg = 1
+								<if test="categoryCd != null">
+										AND category_cd = #{categoryCd}
+								</if>
+						ORDER BY
+								hinmoku_kana
+				</select>
+
+				<!-- ========================================
+						Validation Queries
+						======================================== -->
+
+				<!-- Check if work code exists -->
+				<select id="existsWorkCd" resultType="boolean">
+						SELECT
+								CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+						FROM
+								t_skn_hiyou_inspect_work
+						WHERE
+								work_cd = #{workCd}
+								AND work_order_id = #{workOrderId}
+								AND delete_flg = 0
+								<if test="excludeId != null">
+										AND id != #{excludeId}
+								</if>
+				</select>
+
+				<!-- Check if work order exists -->
+				<select id="existsWorkOrder" resultType="boolean">
+						SELECT
+								CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+						FROM
+								t_skn_work_order
+						WHERE
+								work_order_id = #{workOrderId}
+								AND delete_flg = 0
+				</select>
+
+				<!-- Check if meisai link exists -->
+				<select id="existsMeisaiLink" resultType="boolean">
+						SELECT
+								CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+						FROM
+								t_skn_hiyou_meisai_link
+						WHERE
+								id = #{id}
+								AND delete_flg = 0
+				</select>
+
+				<!-- ========================================
+						Bulk Operation Queries
+						======================================== -->
+
+				<!-- Bulk update inspection work status -->
+				<update id="bulkUpdateInspectionWorkStatus">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								status = #{status},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id IN
+								<foreach collection="idList" item="id" open="(" separator="," close=")">
+										#{id}
+								</foreach>
+				</update>
+
+				<!-- Bulk update inspector -->
+				<update id="bulkUpdateInspector">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								inspector_id = #{inspectorId},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id IN
+								<foreach collection="idList" item="id" open="(" separator="," close=")">
+										#{id}
+								</foreach>
+				</update>
+
+				<!-- Bulk update inspect date -->
+				<update id="bulkUpdateInspectDate">
+						UPDATE t_skn_hiyou_inspect_work
+						SET
+								inspect_date = #{inspectDate},
+								update_user_id = #{updateUserId},
+								update_date = NOW()
+						WHERE
+								id IN
+								<foreach collection="idList" item="id" open="(" separator="," close=")">
+										#{id}
+								</foreach>
+				</update>
+
+				<!-- ========================================
+						History and Audit Queries
+						======================================== -->
+
+				<!-- Insert inspection work history -->
+				<insert id="insertInspectionWorkHistory">
+						INSERT INTO t_skn_hiyou_inspect_work_history (
+								inspect_work_id,
+								work_order_id,
+								work_cd,
+								work_name,
+								work_type,
+								kousuu,
+								tanka,
+								kingaku,
+								status,
+								inspect_date,
+								inspector_id,
+								result,
+								comment,
+								operation_type,
+								operation_user_id,
+								operation_date
+						) VALUES (
+								#{inspectWorkId},
+								#{workOrderId},
+								#{workCd},
+								#{workName},
+								#{workType},
+								#{kousuu},
+								#{tanka},
+								#{kingaku},
+								#{status},
+								#{inspectDate},
+								#{inspectorId},
+								#{result},
+								#{comment},
+								#{operationType},
+								#{operationUserId},
+								NOW()
+						)
+				</insert>
+
+				<!-- Select inspection work history -->
+				<select id="selectInspectionWorkHistory" resultType="map">
+						SELECT
+								h.history_id,
+								h.inspect_work_id,
+								h.work_order_id,
+								h.work_cd,
+								h.work_name,
+								h.work_type,
+								h.kousuu,
+								h.tanka,
+								h.kingaku,
+								h.status,
+								h.inspect_date,
+								h.inspector_id,
+								u.user_name AS inspector_name,
+								h.result,
+								h.comment,
+								h.operation_type,
+								h.operation_user_id,
+								ou.user_name AS operation_user_name,
+								h.operation_date
+						FROM
+								t_skn_hiyou_inspect_work_history h
+						LEFT JOIN
+								m_user u
+								ON h.inspector_id = u.user_id
+						LEFT JOIN
+								m_user ou
+								ON h.operation_user_id = ou.user_id
+						WHERE
+								h.inspect_work_id = #{inspectWorkId}
+						ORDER BY
+								h.operation_date DESC
+				</select>
+
+				<!-- ========================================
+						Report Queries
+						======================================== -->
+
+				<!-- Get inspection work report -->
+				<select id="getInspectionWorkReport" resultType="map">
+						SELECT
+								t_skn_work_order.order_no,
+								t_skn_work_order.order_date,
+								t_skn_work_order.customer_name,
+								t_skn_hiyou_inspect_work.work_cd,
+								t_skn_hiyou_inspect_work.work_name,
+								m_work_type.type_name AS work_type_name,
+								t_skn_hiyou_inspect_work.kousuu,
+								t_skn_hiyou_inspect_work.tanka,
+								t_skn_hiyou_inspect_work.kingaku,
+								m_work_status.status_name,
+								t_skn_hiyou_inspect_work.inspect_date,
+								m_user.user_name AS inspector_name,
+								t_skn_hiyou_inspect_work.result,
+								t_skn_hiyou_inspect_work.comment
+						FROM
+								t_skn_hiyou_inspect_work
+						INNER JOIN
+								t_skn_work_order
+								ON t_skn_hiyou_inspect_work.work_order_id = t_skn_work_order.work_order_id
+						LEFT JOIN
+								m_work_type
+								ON t_skn_hiyou_inspect_work.work_type = m_work_type.type_cd
+						LEFT JOIN
+								m_work_status
+								ON t_skn_hiyou_inspect_work.status = m_work_status.status_cd
+						LEFT JOIN
+								m_user
+								ON t_skn_hiyou_inspect_work.inspector_id = m_user.user_id
+						WHERE
+								t_skn_hiyou_inspect_work.delete_flg = 0
+								<if test="workOrderId != null">
+										AND t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
+								</if>
+								<if test="dateFrom != null">
+										AND t_skn_hiyou_inspect_work.inspect_date &gt;= #{dateFrom}
+								</if>
+								<if test="dateTo != null">
+										AND t_skn_hiyou_inspect_work.inspect_date &lt;= #{dateTo}
+								</if>
+						ORDER BY
+								t_skn_work_order.order_no,
+								t_skn_hiyou_inspect_work.work_cd
+				</select>
+
+				<!-- Get export summary report -->
+				<select id="getExportSummaryReport" resultType="map">
+						SELECT
+								DATE(export_date) AS export_date,
+								export_type,
+								COUNT(*) AS export_count,
+								SUM(record_count) AS total_records,
+								SUM(CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END) AS success_count,
+								SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) AS failed_count
+						FROM
+								t_skn_export_log
+						WHERE
+								export_date BETWEEN #{dateFrom} AND #{dateTo}
+						GROUP BY
+								DATE(export_date),
+								export_type
+						ORDER BY
+								DATE(export_date) DESC,
+								export_type
+				</select>
+
+				<!-- Get work performance report -->
+				<select id="getWorkPerformanceReport" resultType="map">
+						SELECT
+								m_user.user_id,
+								m_user.user_name,
+								m_user.department_name,
+								COUNT(*) AS total_works,
+								SUM(CASE WHEN t_skn_hiyou_inspect_work.status = '2' THEN 1 ELSE 0 END) AS pending_works,
+								SUM(CASE WHEN t_skn_hiyou_inspect_work.status = '3' THEN 1 ELSE 0 END) AS completed_works,
+								SUM(CASE WHEN t_skn_hiyou_inspect_work.status = '4' THEN 1 ELSE 0 END) AS ng_works,
+								ROUND(
+										CAST(SUM(CASE WHEN t_skn_hiyou_inspect_work.status = '3' THEN 1 ELSE 0 END) AS DECIMAL) / 
+										CAST(COUNT(*) AS DECIMAL) * 100, 
+										2
+								) AS completion_rate,
+								SUM(t_skn_hiyou_inspect_work.kingaku) AS total_amount
+						FROM
+								m_user
+						LEFT JOIN
+								t_skn_hiyou_inspect_work
+								ON m_user.user_id = t_skn_hiyou_inspect_work.inspector_id
+								AND t_skn_hiyou_inspect_work.delete_flg = 0
+								AND t_skn_hiyou_inspect_work.inspect_date BETWEEN #{dateFrom} AND #{dateTo}
+						WHERE
+								m_user.user_type = 'INSPECTOR'
+								AND m_user.valid_flg = 1
+						GROUP BY
+								m_user.user_id,
+								m_user.user_name,
+								m_user.department_name
+						HAVING
+								COUNT(*) > 0
+						ORDER BY
+								completion_rate DESC,
+								total_works DESC
+				</select>
+		</mapper>
+	</document>
+</ROOT>
