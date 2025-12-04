@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <ROOT>
 	<document>
 		<mapper namespace="com.example.skn.mapper.ntx.ExportNtxMapper">
+
 				<!-- ========================================
 						Result Maps Section
 						======================================== -->
+				
 				<!-- Result Map for Export NTX Data -->
 				<resultMap id="exportNtxResultMap" type="com.example.skn.dto.ExportNtxDto">
 						<id column="id" property="id"/>
@@ -21,6 +24,7 @@
 						<result column="create_date" property="createDate"/>
 						<result column="update_date" property="updateDate"/>
 				</resultMap>
+
 				<!-- Result Map for Inspection Work Details -->
 				<resultMap id="inspectionWorkResultMap" type="com.example.skn.dto.InspectionWorkDto">
 						<id column="id" property="id"/>
@@ -43,6 +47,7 @@
 						<result column="update_user_id" property="updateUserId"/>
 						<result column="update_date" property="updateDate"/>
 				</resultMap>
+
 				<!-- Result Map for Work Order -->
 				<resultMap id="workOrderResultMap" type="com.example.skn.dto.WorkOrderDto">
 						<id column="work_order_id" property="workOrderId"/>
@@ -59,6 +64,7 @@
 						<result column="update_user_id" property="updateUserId"/>
 						<result column="update_date" property="updateDate"/>
 				</resultMap>
+
 				<!-- Result Map for Export Log -->
 				<resultMap id="exportLogResultMap" type="com.example.skn.dto.ExportLogDto">
 						<id column="log_id" property="logId"/>
@@ -73,6 +79,7 @@
 						<result column="error_message" property="errorMessage"/>
 						<result column="create_date" property="createDate"/>
 				</resultMap>
+
 				<!-- Result Map for Meisai Link -->
 				<resultMap id="meisaiLinkResultMap" type="com.example.skn.dto.MeisaiLinkDto">
 						<id column="id" property="id"/>
@@ -91,9 +98,11 @@
 						<result column="update_user_id" property="updateUserId"/>
 						<result column="update_date" property="updateDate"/>
 				</resultMap>
+
 				<!-- ========================================
 						SQL Fragments for Reusability
 						======================================== -->
+
 				<!-- Common columns for t_skn_hiyou_inspect_work -->
 				<sql id="inspectionWorkColumns">
 						t_skn_hiyou_inspect_work.id,
@@ -115,14 +124,17 @@
 						t_skn_hiyou_inspect_work.update_user_id,
 						t_skn_hiyou_inspect_work.update_date
 				</sql>
+
 				<!-- Common WHERE conditions for active records -->
 				<sql id="activeRecordCondition">
 						AND delete_flg = 0
 				</sql>
+
 				<!-- Common ORDER BY for work records -->
 				<sql id="workOrderSort">
 						ORDER BY work_cd, meisai_no
 				</sql>
+
 				<!-- Date range condition -->
 				<sql id="dateRangeCondition">
 						<if test="dateFrom != null">
@@ -132,9 +144,11 @@
 								AND create_date &lt;= #{dateTo}
 						</if>
 				</sql>
+
 				<!-- ========================================
 						Main Export Queries (Line 289 area)
 						======================================== -->
+
 				<!-- Main export query for NTX data -->
 				<select id="selectExportNtxData" resultMap="exportNtxResultMap" parameterType="map">
 						SELECT
@@ -168,6 +182,7 @@
 								<include refid="dateRangeCondition"/>
 						<include refid="workOrderSort"/>
 				</select>
+
 				<!-- Export NTX data with details -->
 				<select id="selectExportNtxDataWithDetails" resultMap="exportNtxResultMap">
 						SELECT
@@ -209,6 +224,7 @@
 								t_skn_hiyou_inspect_work.work_cd,
 								t_skn_hiyou_meisai_link.meisai_no
 				</select>
+
 				<!-- Export NTX summary data -->
 				<select id="selectExportNtxSummary" resultType="map">
 						SELECT
@@ -230,9 +246,11 @@
 						ORDER BY
 								t_skn_hiyou_inspect_work.work_type
 				</select>
+
 				<!-- ========================================
 						Inspection Work Queries
 						======================================== -->
+
 				<!-- Select all inspection work by work order -->
 				<select id="selectInspectionWorkByOrderId" resultMap="inspectionWorkResultMap">
 						SELECT
@@ -249,6 +267,7 @@
 						ORDER BY
 								t_skn_hiyou_inspect_work.work_cd
 				</select>
+
 				<!-- Select inspection work by ID -->
 				<select id="selectInspectionWorkById" resultMap="inspectionWorkResultMap">
 						SELECT
@@ -262,6 +281,7 @@
 						WHERE
 								t_skn_hiyou_inspect_work.id = #{id}
 				</select>
+
 				<!-- Select inspection work by work code -->
 				<select id="selectInspectionWorkByWorkCd" resultMap="inspectionWorkResultMap">
 						SELECT
@@ -273,6 +293,7 @@
 								AND t_skn_hiyou_inspect_work.work_order_id = #{workOrderId}
 								<include refid="activeRecordCondition"/>
 				</select>
+
 				<!-- Select inspection work by status -->
 				<select id="selectInspectionWorkByStatus" resultMap="inspectionWorkResultMap">
 						SELECT
@@ -292,6 +313,7 @@
 						ORDER BY
 								t_skn_hiyou_inspect_work.inspect_date DESC
 				</select>
+
 				<!-- Select inspection work by date range -->
 				<select id="selectInspectionWorkByDateRange" resultMap="inspectionWorkResultMap">
 						SELECT
@@ -312,6 +334,7 @@
 								t_skn_hiyou_inspect_work.inspect_date DESC,
 								t_skn_hiyou_inspect_work.work_cd
 				</select>
+
 				<!-- Select inspection work with meisai details -->
 				<select id="selectInspectionWorkWithMeisai" resultMap="inspectionWorkResultMap">
 						SELECT
@@ -353,6 +376,7 @@
 								t_skn_hiyou_inspect_work.work_cd,
 								t_skn_hiyou_meisai_link.meisai_no
 				</select>
+
 				<!-- Count inspection work by work order -->
 				<select id="countInspectionWorkByOrderId" resultType="int">
 						SELECT
@@ -363,6 +387,7 @@
 								work_order_id = #{workOrderId}
 								<include refid="activeRecordCondition"/>
 				</select>
+
 				<!-- Count inspection work by status -->
 				<select id="countInspectionWorkByStatus" resultType="int">
 						SELECT
@@ -376,9 +401,11 @@
 										AND work_order_id = #{workOrderId}
 								</if>
 				</select>
+
 				<!-- ========================================
 						Insert Queries
 						======================================== -->
+
 				<!-- Insert inspection work -->
 				<insert id="insertInspectionWork" parameterType="com.example.skn.dto.InspectionWorkDto" 
 								useGeneratedKeys="true" keyProperty="id">
@@ -422,6 +449,7 @@
 								NOW()
 						)
 				</insert>
+
 				<!-- Insert batch inspection work -->
 				<insert id="insertInspectionWorkBatch" parameterType="list">
 						INSERT INTO t_skn_hiyou_inspect_work (
@@ -467,6 +495,7 @@
 								)
 						</foreach>
 				</insert>
+
 				<!-- Insert export log -->
 				<insert id="insertExportLog" parameterType="com.example.skn.dto.ExportLogDto"
 								useGeneratedKeys="true" keyProperty="logId">
@@ -492,6 +521,7 @@
 								NOW()
 						)
 				</insert>
+
 				<!-- Insert meisai link -->
 				<insert id="insertMeisaiLink" parameterType="com.example.skn.dto.MeisaiLinkDto"
 								useGeneratedKeys="true" keyProperty="id">
@@ -527,9 +557,11 @@
 								NOW()
 						)
 				</insert>
+
 				<!-- ========================================
 						Update Queries
 						======================================== -->
+
 				<!-- Update inspection work -->
 				<update id="updateInspectionWork" parameterType="com.example.skn.dto.InspectionWorkDto">
 						UPDATE t_skn_hiyou_inspect_work
@@ -549,6 +581,7 @@
 						WHERE
 								id = #{id}
 				</update>
+
 				<!-- Update inspection work status -->
 				<update id="updateInspectionWorkStatus">
 						UPDATE t_skn_hiyou_inspect_work
@@ -559,6 +592,7 @@
 						WHERE
 								id = #{id}
 				</update>
+
 				<!-- Update export flag -->
 				<update id="updateExportFlag">
 						UPDATE t_skn_hiyou_inspect_work
@@ -570,6 +604,7 @@
 						WHERE
 								id = #{id}
 				</update>
+
 				<!-- Update batch export flag -->
 				<update id="updateExportFlagBatch">
 						UPDATE t_skn_hiyou_inspect_work
@@ -584,6 +619,7 @@
 										#{id}
 								</foreach>
 				</update>
+
 				<!-- Update inspection work result -->
 				<update id="updateInspectionWorkResult">
 						UPDATE t_skn_hiyou_inspect_work
@@ -600,6 +636,7 @@
 						WHERE
 								id = #{id}
 				</update>
+
 				<!-- Update meisai link -->
 				<update id="updateMeisaiLink" parameterType="com.example.skn.dto.MeisaiLinkDto">
 						UPDATE t_skn_hiyou_meisai_link
@@ -616,9 +653,11 @@
 						WHERE
 								id = #{id}
 				</update>
+
 				<!-- ========================================
 						Delete Queries (Logical Delete)
 						======================================== -->
+
 				<!-- Delete inspection work (logical) -->
 				<update id="deleteInspectionWork">
 						UPDATE t_skn_hiyou_inspect_work
@@ -629,6 +668,7 @@
 						WHERE
 								id = #{id}
 				</update>
+
 				<!-- Delete batch inspection work (logical) -->
 				<update id="deleteInspectionWorkBatch">
 						UPDATE t_skn_hiyou_inspect_work
@@ -642,6 +682,7 @@
 										#{id}
 								</foreach>
 				</update>
+
 				<!-- Delete meisai link (logical) -->
 				<update id="deleteMeisaiLink">
 						UPDATE t_skn_hiyou_meisai_link
@@ -652,6 +693,7 @@
 						WHERE
 								id = #{id}
 				</update>
+
 				<!-- Delete all inspection work by work order (logical) -->
 				<update id="deleteInspectionWorkByOrderId">
 						UPDATE t_skn_hiyou_inspect_work
@@ -662,9 +704,11 @@
 						WHERE
 								work_order_id = #{workOrderId}
 				</update>
+
 				<!-- ========================================
 						Work Order Related Queries
 						======================================== -->
+
 				<!-- Select work order by ID -->
 				<select id="selectWorkOrderById" resultMap="workOrderResultMap">
 						SELECT
@@ -687,6 +731,7 @@
 								work_order_id = #{workOrderId}
 								AND delete_flg = 0
 				</select>
+
 				<!-- Select work orders by customer -->
 				<select id="selectWorkOrderByCustomer" resultMap="workOrderResultMap">
 						SELECT
@@ -711,6 +756,7 @@
 						ORDER BY
 								order_date DESC
 				</select>
+
 				<!-- Select work orders by date range -->
 				<select id="selectWorkOrderByDateRange" resultMap="workOrderResultMap">
 						SELECT
@@ -738,6 +784,7 @@
 						ORDER BY
 								order_date DESC
 				</select>
+
 				<!-- Select work orders by status -->
 				<select id="selectWorkOrderByStatus" resultMap="workOrderResultMap">
 						SELECT
@@ -762,9 +809,11 @@
 						ORDER BY
 								order_date DESC
 				</select>
+
 				<!-- ========================================
 						Meisai Link Related Queries
 						======================================== -->
+
 				<!-- Select meisai links by work order -->
 				<select id="selectMeisaiLinkByOrderId" resultMap="meisaiLinkResultMap">
 						SELECT
@@ -791,6 +840,7 @@
 						ORDER BY
 								meisai_no
 				</select>
+
 				<!-- Select meisai link by ID -->
 				<select id="selectMeisaiLinkById" resultMap="meisaiLinkResultMap">
 						SELECT
@@ -814,6 +864,7 @@
 						WHERE
 								id = #{id}
 				</select>
+
 				<!-- Select meisai links by hinmoku code -->
 				<select id="selectMeisaiLinkByHinmokuCd" resultMap="meisaiLinkResultMap">
 						SELECT
@@ -840,6 +891,7 @@
 						ORDER BY
 								create_date DESC
 				</select>
+
 				<!-- Count meisai links by work order -->
 				<select id="countMeisaiLinkByOrderId" resultType="int">
 						SELECT
@@ -850,9 +902,11 @@
 								work_order_id = #{workOrderId}
 								AND delete_flg = 0
 				</select>
+
 				<!-- ========================================
 						Export Log Related Queries
 						======================================== -->
+
 				<!-- Select export logs by date range -->
 				<select id="selectExportLogByDateRange" resultMap="exportLogResultMap">
 						SELECT
@@ -883,6 +937,7 @@
 						ORDER BY
 								t_skn_export_log.export_date DESC
 				</select>
+
 				<!-- Select export log by ID -->
 				<select id="selectExportLogById" resultMap="exportLogResultMap">
 						SELECT
@@ -905,6 +960,7 @@
 						WHERE
 								t_skn_export_log.log_id = #{logId}
 				</select>
+
 				<!-- Select latest export logs by type -->
 				<select id="selectLatestExportLogsByType" resultMap="exportLogResultMap">
 						SELECT
@@ -930,6 +986,7 @@
 								t_skn_export_log.export_date DESC
 						LIMIT #{limit}
 				</select>
+
 				<!-- Update export log status -->
 				<update id="updateExportLogStatus">
 						UPDATE t_skn_export_log
@@ -939,9 +996,11 @@
 						WHERE
 								log_id = #{logId}
 				</update>
+
 				<!-- ========================================
 						Statistics and Summary Queries
 						======================================== -->
+
 				<!-- Get inspection work statistics by work order -->
 				<select id="getInspectionWorkStatsByOrderId" resultType="map">
 						SELECT
@@ -960,6 +1019,7 @@
 								work_order_id = #{workOrderId}
 								AND delete_flg = 0
 				</select>
+
 				<!-- Get inspection work statistics by work type -->
 				<select id="getInspectionWorkStatsByType" resultType="map">
 						SELECT
@@ -984,6 +1044,7 @@
 						ORDER BY
 								work_type
 				</select>
+
 				<!-- Get inspection work statistics by inspector -->
 				<select id="getInspectionWorkStatsByInspector" resultType="map">
 						SELECT
@@ -1016,6 +1077,7 @@
 						ORDER BY
 								work_count DESC
 				</select>
+
 				<!-- Get daily inspection work summary -->
 				<select id="getDailyInspectionWorkSummary" resultType="map">
 						SELECT
@@ -1035,6 +1097,7 @@
 						ORDER BY
 								DATE(inspect_date)
 				</select>
+
 				<!-- Get monthly inspection work summary -->
 				<select id="getMonthlyInspectionWorkSummary" resultType="map">
 						SELECT
@@ -1059,9 +1122,11 @@
 						ORDER BY
 								DATE_FORMAT(inspect_date, '%Y-%m')
 				</select>
+
 				<!-- ========================================
 						Search Queries with Dynamic Conditions
 						======================================== -->
+
 				<!-- Search inspection work with multiple conditions -->
 				<select id="searchInspectionWork" resultMap="inspectionWorkResultMap">
 						SELECT
@@ -1129,6 +1194,7 @@
 								OFFSET #{offset}
 						</if>
 				</select>
+
 				<!-- Count search results -->
 				<select id="countSearchInspectionWork" resultType="int">
 						SELECT
@@ -1171,9 +1237,11 @@
 										AND kingaku &lt;= #{kingakuTo}
 								</if>
 				</select>
+
 				<!-- ========================================
 						Master Data Queries
 						======================================== -->
+
 				<!-- Select work types -->
 				<select id="selectWorkTypes" resultType="map">
 						SELECT
@@ -1188,6 +1256,7 @@
 						ORDER BY
 								display_order
 				</select>
+
 				<!-- Select work statuses -->
 				<select id="selectWorkStatuses" resultType="map">
 						SELECT
@@ -1201,6 +1270,7 @@
 						ORDER BY
 								display_order
 				</select>
+
 				<!-- Select inspectors -->
 				<select id="selectInspectors" resultType="map">
 						SELECT
@@ -1217,6 +1287,7 @@
 						ORDER BY
 								user_kana
 				</select>
+
 				<!-- Select customers -->
 				<select id="selectCustomers" resultType="map">
 						SELECT
@@ -1236,6 +1307,7 @@
 						ORDER BY
 								customer_kana
 				</select>
+
 				<!-- Select hinmoku (products/parts) -->
 				<select id="selectHinmoku" resultType="map">
 						SELECT
@@ -1257,9 +1329,11 @@
 						ORDER BY
 								hinmoku_kana
 				</select>
+
 				<!-- ========================================
 						Validation Queries
 						======================================== -->
+
 				<!-- Check if work code exists -->
 				<select id="existsWorkCd" resultType="boolean">
 						SELECT
@@ -1274,6 +1348,7 @@
 										AND id != #{excludeId}
 								</if>
 				</select>
+
 				<!-- Check if work order exists -->
 				<select id="existsWorkOrder" resultType="boolean">
 						SELECT
@@ -1284,6 +1359,7 @@
 								work_order_id = #{workOrderId}
 								AND delete_flg = 0
 				</select>
+
 				<!-- Check if meisai link exists -->
 				<select id="existsMeisaiLink" resultType="boolean">
 						SELECT
@@ -1294,9 +1370,11 @@
 								id = #{id}
 								AND delete_flg = 0
 				</select>
+
 				<!-- ========================================
 						Bulk Operation Queries
 						======================================== -->
+
 				<!-- Bulk update inspection work status -->
 				<update id="bulkUpdateInspectionWorkStatus">
 						UPDATE t_skn_hiyou_inspect_work
@@ -1310,6 +1388,7 @@
 										#{id}
 								</foreach>
 				</update>
+
 				<!-- Bulk update inspector -->
 				<update id="bulkUpdateInspector">
 						UPDATE t_skn_hiyou_inspect_work
@@ -1323,6 +1402,7 @@
 										#{id}
 								</foreach>
 				</update>
+
 				<!-- Bulk update inspect date -->
 				<update id="bulkUpdateInspectDate">
 						UPDATE t_skn_hiyou_inspect_work
@@ -1336,9 +1416,11 @@
 										#{id}
 								</foreach>
 				</update>
+
 				<!-- ========================================
 						History and Audit Queries
 						======================================== -->
+
 				<!-- Insert inspection work history -->
 				<insert id="insertInspectionWorkHistory">
 						INSERT INTO t_skn_hiyou_inspect_work_history (
@@ -1377,6 +1459,7 @@
 								NOW()
 						)
 				</insert>
+
 				<!-- Select inspection work history -->
 				<select id="selectInspectionWorkHistory" resultType="map">
 						SELECT
@@ -1412,9 +1495,11 @@
 						ORDER BY
 								h.operation_date DESC
 				</select>
+
 				<!-- ========================================
 						Report Queries
 						======================================== -->
+
 				<!-- Get inspection work report -->
 				<select id="getInspectionWorkReport" resultType="map">
 						SELECT
@@ -1461,6 +1546,7 @@
 								t_skn_work_order.order_no,
 								t_skn_hiyou_inspect_work.work_cd
 				</select>
+
 				<!-- Get export summary report -->
 				<select id="getExportSummaryReport" resultType="map">
 						SELECT
@@ -1481,6 +1567,7 @@
 								DATE(export_date) DESC,
 								export_type
 				</select>
+
 				<!-- Get work performance report -->
 				<select id="getWorkPerformanceReport" resultType="map">
 						SELECT
